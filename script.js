@@ -1,91 +1,94 @@
-// script.js
-let items = [];
+let carrito = [];
+const listaServicios = document.getElementById('lista-servicios');
+const tablaCarrito = document.getElementById('tabla-carrito');
+const totalSpan = document.getElementById('total');
+const nombreCliente = document.getElementById('nombre');
+const telefonoCliente = document.getElementById('telefono');
 
-function agregarItem() {
-  const nombre = document.getElementById('itemNombre').value;
-  const precio = parseFloat(document.getElementById('itemPrecio').value);
+function agregarAlCarrito() {
+  const servicioSeleccionado = listaServicios.value;
+  const precio = parseFloat(listaServicios.selectedOptions[0].getAttribute('data-precio'));
 
-  if (!nombre || isNaN(precio)) return alert("Completa nombre y precio correctamente");
+  if (!servicioSeleccionado) return;
 
-  items.push({ nombre, precio });
-  document.getElementById('itemNombre').value = '';
-  document.getElementById('itemPrecio').value = '';
-  mostrarItems();
+  carrito.push({ servicio: servicioSeleccionado, precio });
+  actualizarTabla();
 }
 
-function mostrarItems() {
-  const lista = document.getElementById('itemList');
-  lista.innerHTML = '';
+function actualizarTabla() {
+  tablaCarrito.innerHTML = '';
   let total = 0;
-  items.forEach((item, index) => {
-    const div = document.createElement('div');
-    div.className = 'item';
-    div.innerHTML = `
-      <span>${item.nombre}</span>
-      <span>RD$ ${item.precio.toFixed(2)}</span>
+
+  carrito.forEach((item, index) => {
+    total += item.price ?? item.precio;
+
+    const fila = document.createElement('tr');
+    fila.innerHTML = `
+      <td>${item.servicio}</td>
+      <td>RD$ ${item.precio.toFixed(2)}</td>
+      <td><button onclick="eliminarItem(${index})">❌</button></td>
     `;
-    lista.appendChild(div);
-    total += item.precio;
+    tablaCarrito.appendChild(fila);
   });
-  document.getElementById('totalFactura').textContent = `Total: RD$ ${total.toFixed(2)}`;
+
+  totalSpan.textContent = total.toFixed(2);
 }
 
-function generarFacturaPDF(cliente, telefono, items, total) {
+function eliminarItem(index) {
+  carrito.splice(index, 1);
+  actualizarTabla();
+}
+
+function generarFacturaPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
+
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(18);
-  doc.setTextColor(180, 123, 0);
-  doc.text("Jireh Beauty Salón", 20, 20);
+  doc.text("Jireh Beauty Salón Nails Bar", 20, 20);
   doc.setFontSize(12);
-  doc.setTextColor(0, 0, 0);
-  doc.text(`Cliente: ${cliente}`, 20, 30);
-  doc.text(`Teléfono: ${telefono}`, 20, 37);
+  doc.text(`Cliente: ${nombreCliente.value}`, 20, 30);
+  doc.text(`Teléfono: ${telefonoCliente.value}`, 20, 38);
+  doc.text("Detalle de Servicios", 20, 50);
 
-  let y = 50;
-  doc.text("Detalle:", 20, y);
-  y += 7;
+  let y = 60;
+  let total = 0;
 
-  items.forEach(item => {
-    doc.text(`${item.nombre} - RD$ ${item.precio.toFixed(2)}`, 25, y);
-    y += 7;
+  carrito.forEach((item) => {
+    doc.text(`- ${item.servicio} | RD$ ${item.precio.toFixed(2)}`, 20, y);
+    y += 8;
+    total += item.precio;
   });
 
-  y += 5;
-  doc.setFontSize(14);
-  doc.setTextColor(180, 123, 0);
-  doc.text(`Total: RD$ ${total.toFixed(2)}`, 20, y);
-  return doc;
+  doc.setFont("helvetica", "bold");
+  doc.text(`Total: RD$ ${total.toFixed(2)}`, 20, y + 10);
+
+  doc.save(`Factura_${nombreCliente.value}.pdf`);
 }
 
-document.getElementById('invoiceForm').addEventListener('submit', function (e) {
-  e.preventDefault();
-  const cliente = document.getElementById('cliente').value;
-  const telefono = document.getElementById('telefono').value;
-
-  if (!cliente || !telefono || items.length === 0) {
-    return alert("Faltan datos o productos");
+function enviarPorWhatsapp() {
+  const numero = telefonoCliente.value;
+  if (!numero) {
+    alert("Debes ingresar un número de teléfono.");
+    return;
   }
 
-  const total = items.reduce((acc, val) => acc + val.precio, 0);
-  const doc = generarFacturaPDF(cliente, telefono, items, total);
+  let mensaje = `*Jireh Beauty Salón Nails Bar*\n\nFactura para: *${nombreCliente.value}*\n`;
+  mensaje += "Servicios:\n";
 
-  doc.save(`Factura_${cliente}.pdf`);
+  let total = 0;
 
-  const textoFactura = `Hola ${cliente}, su factura en Jireh Beauty Salón:
-` +
-    items.map(i => `${i.nombre} - RD$ ${i.precio.toFixed(2)}`).join('\n') +
-    `\nTotal: RD$ ${total.toFixed(2)}`;
+  carrito.forEach(item => {
+    mensaje += `- ${item.servicio}: RD$ ${item.precio.toFixed(2)}\n`;
+    total += item.precio;
+  });
 
-  const mensaje = encodeURIComponent(textoFactura);
-  window.open(`https://wa.me/1${telefono}?text=${mensaje}`, '_blank');
+  mensaje += `\n*Total: RD$ ${total.toFixed(2)}*`;
 
-  const historialList = document.getElementById('historialList');
-  const li = document.createElement('li');
-  li.textContent = `${cliente} - RD$ ${total.toFixed(2)} - ${new Date().toLocaleString()}`;
-  historialList.appendChild(li);
+  const link = `https://wa.me/1${numero}?text=${encodeURIComponent(mensaje)}`;
+  window.open(link, '_blank');
+}
 
-  // limpiar
-  items = [];
-  mostrarItems();
-  document.getElementById('invoiceForm').reset();
-});
+function imprimirFactura() {
+  window.print();
+}
