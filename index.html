@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generar Factura - Jireh Beauty Salón</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #007bff;
+    }
+    label {
+      font-weight: bold;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 8px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Generar Factura</h1>
+    <form id="invoiceForm">
+      <label for="cliente">Nombre del Cliente:</label>
+      <input type="text" id="cliente" required>
+
+      <label for="telefono">Número de Teléfono:</label>
+      <input type="text" id="telefono" required>
+
+      <label for="items">Detalles de la Factura (Servicios/Productos):</label>
+      <textarea id="items" rows="4" required></textarea>
+
+      <label for="total">Total:</label>
+      <input type="number" id="total" required>
+
+      <button type="submit">Generar Factura</button>
+    
+    <button type="button" onclick="window.print()">Imprimir Factura</button>
+    </form>
+    
+
+    <h3>Historial de Facturas</h3>
+    <ul id="historialList"></ul>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
