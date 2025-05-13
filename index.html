@@ -1,76 +1,109 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generar Factura - Jireh Beauty Salón</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jireh Beauty Salón - Facturación</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f8f9fa;
+      font-family: 'Playfair Display', serif;
+      background-color: #fff8f0;
+      color: #3e2723;
       margin: 0;
       padding: 20px;
     }
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+
     h1 {
-      color: #007bff;
+      color: #b47b00;
+      text-align: center;
+      margin-bottom: 10px;
     }
-    label {
-      font-weight: bold;
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #ffffff;
+      border: 1px solid #e0cda9;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0px 0px 10px #d8c3a5;
     }
-    input, textarea, button {
+
+    input, button, select {
+      padding: 10px;
       width: 100%;
-      padding: 8px;
       margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      border-radius: 6px;
+      border: 1px solid #bfae9f;
+      font-size: 14px;
     }
+
     button {
-      background-color: #007bff;
+      background-color: #b47b00;
       color: white;
+      border: none;
       cursor: pointer;
     }
+
     button:hover {
-      background-color: #0056b3;
+      background-color: #8e6400;
     }
+
+    .item-list {
+      margin-top: 15px;
+      border-top: 1px solid #e0cda9;
+      padding-top: 10px;
+    }
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .total {
+      font-weight: bold;
+      font-size: 18px;
+      text-align: right;
+      margin-top: 15px;
+      color: #b47b00;
+    }
+
+    ul { list-style: none; padding-left: 0; }
   </style>
 </head>
 <body>
-
   <div class="container">
-    <h1>Generar Factura</h1>
+    <h1>Jireh Beauty Salón</h1>
     <form id="invoiceForm">
-      <label for="cliente">Nombre del Cliente:</label>
-      <input type="text" id="cliente" required>
+      <label>Nombre del Cliente:</label>
+      <input type="text" id="cliente" required />
 
-      <label for="telefono">Número de Teléfono:</label>
-      <input type="text" id="telefono" required>
+      <label>Teléfono (WhatsApp):</label>
+      <input type="tel" id="telefono" required />
 
-      <label for="items">Detalles de la Factura (Servicios/Productos):</label>
-      <textarea id="items" rows="4" required></textarea>
+      <label>Producto o Servicio:</label>
+      <input type="text" id="itemNombre" />
 
-      <label for="total">Total:</label>
-      <input type="number" id="total" required>
+      <label>Precio (RD$):</label>
+      <input type="number" id="itemPrecio" />
 
-      <button type="submit">Generar Factura</button>
-    
-    <button type="button" onclick="window.print()">Imprimir Factura</button>
+      <button type="button" onclick="agregarItem()">Agregar Producto o Servicio</button>
+
+      <div class="item-list" id="itemList"></div>
+
+      <div class="total" id="totalFactura">Total: RD$ 0.00</div>
+
+      <button type="submit">Generar Factura y Enviar</button>
     </form>
-    
+
+    <button onclick="window.print()">Imprimir Factura</button>
 
     <h3>Historial de Facturas</h3>
     <ul id="historialList"></ul>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>
