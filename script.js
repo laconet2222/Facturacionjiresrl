@@ -1,17 +1,21 @@
 let carrito = [];
-const listaServicios = document.getElementById('lista-servicios');
 const tablaCarrito = document.getElementById('tabla-carrito');
 const totalSpan = document.getElementById('total');
 const nombreCliente = document.getElementById('nombre');
 const telefonoCliente = document.getElementById('telefono');
 
-function agregarAlCarrito() {
-  const servicioSeleccionado = listaServicios.value;
-  const precio = parseFloat(listaServicios.selectedOptions[0].getAttribute('data-precio'));
+function agregarManual() {
+  const servicio = document.getElementById('servicioManual').value;
+  const precio = parseFloat(document.getElementById('precioManual').value);
 
-  if (!servicioSeleccionado) return;
+  if (!servicio || isNaN(precio)) {
+    alert("Debes escribir el nombre del servicio y su precio.");
+    return;
+  }
 
-  carrito.push({ servicio: servicioSeleccionado, precio });
+  carrito.push({ servicio, precio });
+  document.getElementById('servicioManual').value = "";
+  document.getElementById('precioManual').value = "";
   actualizarTabla();
 }
 
@@ -20,7 +24,7 @@ function actualizarTabla() {
   let total = 0;
 
   carrito.forEach((item, index) => {
-    total += item.price ?? item.precio;
+    total += item.precio;
 
     const fila = document.createElement('tr');
     fila.innerHTML = `
@@ -31,7 +35,7 @@ function actualizarTabla() {
     tablaCarrito.appendChild(fila);
   });
 
-  totalSpan.textContent = total.toFixed(2);
+  totalSpan.textContent = `Total: RD$ ${total.toFixed(2)}`;
 }
 
 function eliminarItem(index) {
@@ -49,7 +53,7 @@ function generarFacturaPDF() {
   doc.setFontSize(12);
   doc.text(`Cliente: ${nombreCliente.value}`, 20, 30);
   doc.text(`Teléfono: ${telefonoCliente.value}`, 20, 38);
-  doc.text("Detalle de Servicios", 20, 50);
+  doc.text("Detalle de Servicios:", 20, 50);
 
   let y = 60;
   let total = 0;
